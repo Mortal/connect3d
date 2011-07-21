@@ -230,7 +230,7 @@ Board.makePin = function (x, y) {
 Board.makePill = function (x, y, z, ply) {
   var height = 100, padding = 5;
   var material = new THREE.MeshPhongMaterial({ color: (ply == Player.ONE) ? 0xFF0000 : 0x0000FF });
-  var geometry = new THREE.CylinderGeometry(32, 100, 100, height-padding);
+  var geometry = new THREE.TorusGeometry(48, (height)/2, 32, 32);
   var mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = -90 * Math.PI / 180;
   mesh.position.x = x*300 - 450;
