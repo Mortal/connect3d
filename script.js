@@ -28,20 +28,24 @@ if ( !window.requestAnimationFrame ) {
 }
 
 
-var Player = {RED: 1, BLUE: 2};
+var Player = {ONE: 1, TWO: 2};
 
 function Board() {
   var scene = this.scene = new THREE.Scene();
 
   scene.addObject(Board.makeBoardMesh());
 
-  var light1 = new THREE.DirectionalLight(0xFFFFFF, .7);
-  light1.position.x = light1.position.y = light1.position.z = 1;
-  scene.addLight(light1);
-  var light2 = new THREE.DirectionalLight(0xFFFFFF, .6);
-  light2.position.x = -2;
-  light2.position.y = light2.position.z = 1;
-  scene.addLight(light2);
+  var light = new THREE.DirectionalLight(0xFFFFFF, .7);
+  light.position = new THREE.Vector3(1,1,1);
+  scene.addLight(light);
+
+  light = new THREE.DirectionalLight(0xFFFFFF, .7);
+  light.position = new THREE.Vector3(-2,1,1);
+  scene.addLight(light);
+
+  light = new THREE.DirectionalLight(0xFFFFFF, .7);
+  light.position = new THREE.Vector3(1,1,-2);
+  scene.addLight(light);
 
   for (var x = 0; x < 4; ++x) {
     for (var y = 0; y < 4; ++y) {
@@ -53,15 +57,13 @@ function Board() {
 
   this.hoverPin = null;
 
-  //this.placePill(0, 0, Player.BLUE);
-  //this.placePill(3, 3, Player.RED);
-  //this.placePill(3, 0, Player.BLUE);
-  //this.placePill(0, 3, Player.RED);
-  //this.placePill(2, 0, Player.BLUE);
-  //this.placePill(1, 0, Player.RED);
+  this.turn = Player.ONE;
 }
 
 Board.prototype.placePill = function (x, y, ply, noWinDetect) {
+  if (!ply) {
+    ply = this.turn;
+  }
   var col = this.columns[y*4 + x];
   var z = col.length;
   var pill = Board.makePill(x, y, z, ply);
@@ -73,6 +75,7 @@ Board.prototype.placePill = function (x, y, ply, noWinDetect) {
       alert(ply+" wins! "+win);
     }
   }
+  this.turn = (ply == Player.ONE) ? Player.TWO : Player.ONE;
   return z;
 };
 
@@ -185,11 +188,8 @@ function render() {
   renderer.render(board.scene, camera);
 }
 
-var turn = Player.BLUE;
-
 function place(x, y) {
-  board.placePill(x, y, turn);
-  turn = (turn == Player.BLUE) ? Player.RED : Player.BLUE;
+  board.placePill(x, y);
 }
 
 Board.prototype.clearPills = function () {
@@ -200,7 +200,7 @@ Board.prototype.clearPills = function () {
 };
 
 Board.makeBoardMesh = function () {
-  var material = new THREE.MeshBasicMaterial({ color: 0x000099 });
+  var material = new THREE.MeshLambertMaterial({ color: 0x007700 });
   var geometry = new THREE.PlaneGeometry(1000, 1000);
   var mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = -90 * Math.PI / 180;
@@ -214,7 +214,7 @@ Board.makePin = function (x, y) {
   var r = 20; // radius
   var height = 400;
   var geometry = new THREE.CylinderGeometry(6, r, r, height);
-  var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xCCCC99 }));
+  var mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xCCCC99 }));
   mesh.rotation.x = -90 * Math.PI / 180;
   var px = mesh.position.x = x*300 - 450;
   var pz = mesh.position.z = y*300 - 450;
@@ -229,7 +229,7 @@ Board.makePin = function (x, y) {
 
 Board.makePill = function (x, y, z, ply) {
   var height = 100, padding = 5;
-  var material = new THREE.MeshPhongMaterial({ color: (ply == Player.RED) ? 0xFF0000 : 0x0000FF });
+  var material = new THREE.MeshPhongMaterial({ color: (ply == Player.ONE) ? 0xFF0000 : 0x0000FF });
   var geometry = new THREE.CylinderGeometry(32, 100, 100, height-padding);
   var mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = -90 * Math.PI / 180;
