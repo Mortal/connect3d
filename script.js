@@ -2,7 +2,7 @@
 
 var scenewidth, sceneheight, camera, scene, geometry, material, renderer, board, mouse = {down: false}, camerapitch, camerayaw, projector;
 
-window.addEventListener('load', init);
+window.addEventListener('load', init, false);
 
 /**
  * Provides requestAnimationFrame in a cross browser way.
@@ -97,9 +97,9 @@ function init() {
 
   setCameraPitchYaw(Math.PI/6, Math.PI/8);
 
-  window.addEventListener('mousedown', mousedown);
-  window.addEventListener('mousemove', mousemove);
-  window.addEventListener('mouseup', mouseup);
+  window.addEventListener('mousedown', mousedown, false);
+  window.addEventListener('mousemove', mousemove, false);
+  window.addEventListener('mouseup', mouseup, false);
 
   loop();
 }
